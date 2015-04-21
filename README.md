@@ -66,4 +66,4 @@ And that's it! geoAlgorithm is up and running.
 If you're interested in trying this sample app, we'll provide soon a downloadable apk or contact us and we'll get in touch as soon as possible!
 
 # Contact
-Have any questions or you're in need of support? You can send us an email at <a href="mailto:info@geoalgorithm.com">info@geoalgorithm</a> or visit us at <a href="http://www.geoalgorithm.com">www.geoalgorithm.com</a>
+Have any questions or you're in need of support? You can send us an email at <a href="mailto:info@geoalgorithm.com">info@geoalgorithm</a> or visit us at <a href="http://tuillo.com/algorithm/">tuillo.com/algorithm/</a>
