@@ -4,7 +4,8 @@ This demo app is just an example showing a quick integration of the geoAlgorithm
 # Configuration
 In order to receive location updates you need to register a receiver in your manifest file, just like this:
 <pre><code>
-&lt;receiver android:name="com.tuillo.algorithmlibrary.receivers.LocationReceiver" android:enabled="true" /&gt;
+&lt;receiver android:name="com.tuillo.algorithmlibrary.receivers.LocationReceiver" 
+                                                            android:enabled="true" /&gt;
 
 </code></pre>
 Also, you need to request the following permissions:
@@ -40,7 +41,8 @@ So the resulting code will be something like this:
 protected void onResume() {
     super.onResume();
 
-    LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, new IntentFilter(AlgorithmControlTower.LIB_INTENT_ACTION));
+    LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, 
+                    new IntentFilter(AlgorithmControlTower.LIB_INTENT_ACTION));
 
 }
 
