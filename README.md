@@ -1,4 +1,7 @@
 # geoAlgorithmTestApp
+
+<b>Note:</b> In order to use this code you'll need access to our library and a valid API key. You can get your trial account at <a href="http://tuillo.com/algorithm/">tuillo.com/algorithm/</a>
+
 This demo app is just an example showing a quick integration of the geoAlgorithm library. The steps used are as follows:
 
 # Configuration
