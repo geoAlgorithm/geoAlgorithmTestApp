@@ -1,6 +1,6 @@
 # geoAlgorithmTestApp
 
-<b>Note:</b> In order to use this code you'll need access to our library and a valid API key. You can get your trial account at <a href="http://tuillo.com/algorithm/">tuillo.com/algorithm/</a>. Also, since this demo uses Google Maps API you'll need to get your own API key. In order to get one, just follow this <a href="https://console.developers.google.com">link</a>.
+<b>Note:</b> In order to use this code you'll need access to our library and a valid API key. You can get your trial account at <a href="http://www.geoalgorithm.com/">www.geoalgorithm.com/</a>. Also, since this demo uses Google Maps API you'll need to get your own API key. In order to get one, just follow this <a href="https://console.developers.google.com">link</a>.
 
 This demo app is just an example showing a quick integration of the geoAlgorithm library. The steps used are as follows:
 
@@ -71,4 +71,4 @@ And that's it! geoAlgorithm is up and running.
 If you're interested in trying this sample app, we'll provide soon a downloadable apk or contact us and we'll get in touch as soon as possible!
 
 # Contact
-Have any questions or you're in need of support? You can send us an email at <a href="mailto:info@geoalgorithm.com">info@geoalgorithm.com</a> or visit us at <a href="http://tuillo.com/algorithm/">tuillo.com/algorithm/</a>
+Have any questions or you're in need of support? You can send us an email at <a href="mailto:info@geoalgorithm.com">info@geoalgorithm.com</a> or visit us at <a href="http://www.geoalgorithm.com/">www.geoalgorithm.com/</a>
