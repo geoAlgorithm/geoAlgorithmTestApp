@@ -19,8 +19,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.tuillo.algorithmlibrary.AlgorithmControlTower;
-import com.tuillo.algorithmlibrary.AlgorithmOptions;
+import com.geoalgorithm.library.AlgorithmControlTower;
+import com.geoalgorithm.library.AlgorithmOptions;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,6 +39,7 @@ public class MapsActivity extends FragmentActivity {
 
     @Override
     protected void onResume() {
+
         super.onResume();
         setUpMapIfNeeded();
 
@@ -83,7 +84,7 @@ public class MapsActivity extends FragmentActivity {
                  * by passing an AlgorithmOptions instance with bad and good accuracy scenario intervals, only get updates when online
                  * and without GingerBread compatibility.
                  */
-                AlgorithmControlTower.initWithOptions(getApplicationContext(), "<YOUR_KEY_HERE>", new AlgorithmOptions(10 * 60 * 1000, 60 * 1000, 1000, true, false));
+                AlgorithmControlTower.initWithOptions(getApplicationContext(), getString(R.string.api), new AlgorithmOptions(10 * 60 * 1000, 60 * 1000, 1000, true, false));
 
                 /**
                  * We also enable debug logging in order to read important information
@@ -97,6 +98,7 @@ public class MapsActivity extends FragmentActivity {
                     addMarker(location);
 
                     moveCamera(location);
+
                 }
             }
         }

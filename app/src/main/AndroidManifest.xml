@@ -43,11 +43,11 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.tuillo.algorithmlibrary.receivers.LocationReceiver" android:enabled="true" >
+        <receiver android:name="com.geoalgorithm.library.receivers.LocationReceiver" android:enabled="true" >
 
         </receiver>
 
-        <receiver android:name="com.tuillo.algorithmlibrary.receivers.ConnectivityReceiver">
+        <receiver android:name="com.geoalgorithm.library.receivers.ConnectivityReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
