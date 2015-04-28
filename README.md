@@ -7,7 +7,7 @@ This demo app is just an example showing a quick integration of the geoAlgorithm
 # Configuration
 In order to receive location updates you need to register a receiver in your manifest file, just like this:
 <pre><code>
-&lt;receiver android:name="com.tuillo.algorithmlibrary.receivers.LocationReceiver" 
+&lt;receiver android:name="com.geoalgorithm.library.receivers.LocationReceiver" 
                                                             android:enabled="true" /&gt;
 
 </code></pre>
