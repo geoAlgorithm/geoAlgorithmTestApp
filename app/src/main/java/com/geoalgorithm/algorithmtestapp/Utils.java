@@ -23,8 +23,7 @@ public class Utils {
 
                 return formattedDate;
 
-            }else
-            if(dif>=2){
+            }else if(dif>=2){
 
                 Format sdf = new SimpleDateFormat("H:mm:ss', 'yyyy/MM/dd");
 
@@ -76,7 +75,6 @@ public class Utils {
         long day = 24 * 60 * 60 * 1000; // hs * min * seg * mil
 
         long finalDifference = dif / day;
-
 
         return finalDifference;
 
