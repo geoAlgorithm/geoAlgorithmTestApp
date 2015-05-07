@@ -1,28 +1,33 @@
 package com.geoalgorithm.algorithmtestapp;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.geoalgorithm.library.AlgorithmControlTower;
 import com.geoalgorithm.library.AlgorithmOptions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -30,11 +35,54 @@ public class MapsActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private List<Location> mLocations;
+    public static final String NEW_LOCATION_RECEIVED = "new_location_received";
+
+    private List<String> mLocationTitles = new ArrayList<>();
+    private ListView mDrawerList;
+    private MyArrayAdapter adapter;
+    private ProgressDialog mDialog;
+    private List<Marker> mMarkers = new ArrayList<>();
+    private Marker lastMarker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_maps);
+
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        adapter = new MyArrayAdapter(this, mLocationTitles,
+                R.layout.list_item);
+        mDrawerList.setAdapter(adapter);
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
         setUpMapIfNeeded();
+
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+            selectItem(position);
+        }
+    }
+
+    /** Swaps between markers */
+    private void selectItem(int position) {
+        // Create a new fragment and specify the planet to show based on position
+
+        mDrawerList.setItemChecked(position, true);
+        moveCamera(mLocations.get(position));
+
+        if(lastMarker != null)
+            lastMarker.hideInfoWindow();
+
+        lastMarker = mMarkers.get(position);
+
+        lastMarker.showInfoWindow();
     }
 
     @Override
@@ -44,7 +92,21 @@ public class MapsActivity extends FragmentActivity {
         setUpMapIfNeeded();
 
         //We register our location receiver
-        LocalBroadcastManager.getInstance(this).registerReceiver(mLocationReceiver, new IntentFilter(AlgorithmControlTower.LIB_INTENT_ACTION));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mLocationReceiver, new IntentFilter(NEW_LOCATION_RECEIVED));
+
+    }
+
+    /**
+     * Let's not forget to unregister our Receiver
+     */
+    @Override
+    protected void onStop(){
+
+        super.onStop();
+
+        if(mDialog != null && mDialog.isShowing())
+            mDialog.dismiss();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mLocationReceiver);
 
     }
 
@@ -54,56 +116,102 @@ public class MapsActivity extends FragmentActivity {
      *
      * Also, we initialize the Library with our provided API Key
      */
+
     private void setUpMapIfNeeded() {
+
         if (mMap == null) {
 
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                     .getMap();
 
             if(mLocations == null && mMap != null) {
-                SharedPreferences prefs = getSharedPreferences("MapsTest",Context.MODE_PRIVATE);
-                String locationJson = prefs.getString("locationJson", "");
 
-                if(!locationJson.equals("")){
+                if(AlgorithmControlTower.getLastLocation(this) == null || AlgorithmControlTower.getLastLocation(this).getAccuracy() == 0){
 
-                    Gson gson = new Gson();
-                    mLocations = gson.fromJson(locationJson,new TypeToken<ArrayList<Location>>(){}.getType());
+                    mDialog = new ProgressDialog(this);
+
+                    mDialog.setCancelable(false);
+
+                    mDialog.setMessage("Fetching location, please wait...");
+
+                    mDialog.show();
 
                 }
-                if(mLocations == null){
-                    mLocations = new ArrayList<>();
-                }
 
-                for(Location location : mLocations) {
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(),
-                            location.getLongitude())).title("Location with accuracy "+location.getAccuracy()+" taken at "+new Date(location.getTime())));
-                }
+                loadMarkersOnList(true,false);
+
+
 
                 /**
                  * This is where we initialize the geoAlgorithm library with our supplied API Key, also, we'll be setting our preferences
-                 * by passing an AlgorithmOptions instance with bad and good accuracy scenario intervals, only get updates when online
+                 * by passing an AlgorithmOptions instance with bad and good accuracy scenario intervals
                  * and without GingerBread compatibility.
                  */
-                AlgorithmControlTower.initWithOptions(getApplicationContext(), getString(R.string.api), new AlgorithmOptions(10 * 60 * 1000, 60 * 1000, 1000, true, false));
+                AlgorithmControlTower.initWithOptions(getApplicationContext(), getString(R.string.api), new AlgorithmOptions(10 * 60 * 1000, 60 * 1000, false));
 
                 /**
                  * We also enable debug logging in order to read important information
                  */
                 AlgorithmControlTower.enableDebugLogs(true);
 
-                if(mLocations.size()>0) {
 
-                    Location location = mLocations.get(mLocations.size()-1);
 
-                    addMarker(location);
-
-                    moveCamera(location);
-
-                }
             }
+
         }
 
     }
+
+    private void loadMarkersOnList(boolean loadMarkersOnMap, boolean loadLastMarker){
+
+        SharedPreferences prefs = getSharedPreferences("MapsTest", Context.MODE_PRIVATE);
+        String locationJson = prefs.getString("locationJson", "");
+
+        if(!locationJson.equals("")){
+
+            Gson gson = new Gson();
+            mLocations = gson.fromJson(locationJson,new TypeToken<ArrayList<Location>>(){}.getType());
+
+            Collections.reverse(mLocations);
+
+        }
+        if(mLocations == null){
+            mLocations = new ArrayList<>();
+        }
+
+        if(mLocationTitles == null)
+            mLocationTitles = new ArrayList<>();
+        else
+            mLocationTitles.clear();
+
+        for(Location location : mLocations) {
+
+            String date = Utils.dateFormatter(new Date(location.getTime()));
+
+            if(loadMarkersOnMap) {
+
+                addMarker(location,false);
+
+            }
+            mLocationTitles.add(date + ", Accuracy = " + location.getAccuracy() + " m");
+
+        }
+
+        if(loadLastMarker && mLocations.size()>0){
+            addMarker(mLocations.get(0),true);
+        }
+
+        if(mLocations.size()>0)
+            selectItem(0);
+
+        adapter = new MyArrayAdapter(this,mLocationTitles,
+                R.layout.list_item);
+
+        mDrawerList.setAdapter(adapter);
+
+    }
+
+
 
 
     /**
@@ -114,36 +222,28 @@ public class MapsActivity extends FragmentActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            if(intent.getAction().equals(AlgorithmControlTower.LIB_INTENT_ACTION)){
+            if(intent.getAction().equals(NEW_LOCATION_RECEIVED)){
+
+                if(mDialog != null && mDialog.isShowing())
+                    mDialog.dismiss();
 
                 //We make sure that we have a valid location
-                if(intent.getExtras().getBoolean(AlgorithmControlTower.HAS_LOCATION_TAG) && mMap != null){
+                if(mMap != null){
 
                     //And now we can work with our retrieved location by calling getLastLocation
                     Location location = AlgorithmControlTower.getLastLocation(MapsActivity.this);
 
-                    mLocations.add(location);
-
-                    Gson gson = new GsonBuilder().create();
-
-                    String locationJson = gson.toJson(mLocations, new TypeToken<List<Location>>() {
-                    }.getType());
-
-                    SharedPreferences.Editor editor = getSharedPreferences("MapsTest", Context.MODE_PRIVATE).edit();
-
-                    editor.putString("locationJson",locationJson).commit();
-
-                    addMarker(location);
+                    addMarker(location,true);
 
                     moveCamera(location);
 
-                }
+                    loadMarkersOnList(false,false);
 
+                }
 
             }
 
         }
-
 
     };
 
@@ -153,12 +253,8 @@ public class MapsActivity extends FragmentActivity {
      */
     private void moveCamera(Location location){
 
-        CameraUpdate center=
-                CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),
-                        location.getLongitude()));
-        CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
-
-        mMap.moveCamera(center);
+        CameraUpdate zoom=CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),
+                location.getLongitude()), 15);
 
         mMap.animateCamera(zoom);
 
@@ -168,10 +264,20 @@ public class MapsActivity extends FragmentActivity {
      * Simple method that will add a marker on our map
      * @param location
      */
-    private void addMarker(Location location){
+    private void addMarker(Location location,boolean setFirst){
 
-        mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(),
-                location.getLongitude())).title("Location with accuracy "+location.getAccuracy()+" taken at "+new Date(location.getTime())));
+        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(),
+                location.getLongitude())).title("Location with accuracy " + location.getAccuracy()));
+
+        // marker.setSnippet("Taken " + new Date(location.getTime()));
+        String date = Utils.dateFormatter(new Date(location.getTime()));
+
+        marker.setSnippet("Taken " + date);
+
+        if(setFirst)
+            mMarkers.add(0,marker);
+        else
+            mMarkers.add(marker);
 
     }
 }

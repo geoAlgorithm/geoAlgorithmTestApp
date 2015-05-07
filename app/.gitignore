@@ -1,1 +1,11 @@
 /build
+
+src/debug/res/values/google_maps_api.xml
+libs
+src/main/java/com/example/usuario/testapp
+src/debug
+geoAlgorithm Demo.apk
+src/androidTest
+build
+app-debug.apk
+proguard-rules.pro

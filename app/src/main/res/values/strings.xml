@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Algorithm Test App</string>
-    <string name="title_activity_maps">Map</string>
-    <string name="api">YOUR API KEY</string>
+    <string name="app_name">GeoAlgorithm Test App</string>
+    <string name="title_activity_maps">GeoAlgorithm Test App</string>
+    <string name="api">1</string>
 </resources>

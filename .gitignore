@@ -7,3 +7,12 @@
 /captures
 
 app/src/debug
+app/src/debug/res/values/google_maps_api.xml
+app/libs
+app/build
+.idea
+app/src/androidTest
+app/app-debug.apk
+build
+app/proguard-rules.pro
+app/geoAlgorithm Demo.apk
