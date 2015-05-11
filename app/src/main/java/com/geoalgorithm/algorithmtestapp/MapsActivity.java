@@ -80,6 +80,11 @@ public class MapsActivity extends FragmentActivity {
         if(lastMarker != null)
             lastMarker.hideInfoWindow();
 
+        if(adapter != null) {
+            adapter.setSelectedRow(position);
+            adapter.notifyDataSetChanged();
+        }
+
         lastMarker = mMarkers.get(position);
 
         lastMarker.showInfoWindow();
@@ -126,7 +131,10 @@ public class MapsActivity extends FragmentActivity {
 
             if(mLocations == null && mMap != null) {
 
-                if(AlgorithmControlTower.getLastLocation(this) == null || AlgorithmControlTower.getLastLocation(this).getAccuracy() == 0){
+                SharedPreferences prefs = getSharedPreferences("MapsTest", Context.MODE_PRIVATE);
+                String locationJson = prefs.getString("locationJson", "");
+
+                if( locationJson.equals("") && (AlgorithmControlTower.getLastLocation(this) == null || AlgorithmControlTower.getLastLocation(this).getAccuracy() == 0) ){
 
                     mDialog = new ProgressDialog(this);
 
