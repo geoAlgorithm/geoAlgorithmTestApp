@@ -64,10 +64,14 @@ public class MapsActivity extends FragmentActivity {
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
+
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
+
             selectItem(position);
+
         }
+
     }
 
     /** Swaps between markers */
@@ -162,7 +166,11 @@ public class MapsActivity extends FragmentActivity {
                  */
                 AlgorithmControlTower.enableDebugLogs(true);
 
-
+                /**
+                 * Additionally, we could enable location updates with High Accuracy, we'll leave this line commented
+                 * in order to maximize battery life
+                 */
+                //AlgorithmControlTower.setHighAccuracyMode(true);
 
             }
 
@@ -201,6 +209,7 @@ public class MapsActivity extends FragmentActivity {
                 addMarker(location,false);
 
             }
+
             mLocationTitles.add(date + ", Accuracy = " + location.getAccuracy() + " m");
 
         }
@@ -218,7 +227,6 @@ public class MapsActivity extends FragmentActivity {
         mDrawerList.setAdapter(adapter);
 
     }
-
 
 
 
@@ -283,8 +291,11 @@ public class MapsActivity extends FragmentActivity {
         marker.setSnippet("Taken " + date);
 
         if(setFirst)
+
             mMarkers.add(0,marker);
+
         else
+
             mMarkers.add(marker);
 
     }
